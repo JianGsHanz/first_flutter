@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/shopping.dart';
+import 'package:flutter_app/strings.dart';
 import 'home.dart';
 import 'mine.dart';
 
@@ -42,13 +43,18 @@ class ZYHFlutter extends StatefulWidget {
 
 class ZYHFlutterState extends State<ZYHFlutter> {
   var _currentIndex = 0;
+  List<String> titles = [Strings.titleHome,Strings.titleShopping,Strings.titleMine];
   final PageController _controller = PageController();
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      appBar: AppBar(
+        title: Text(titles[_currentIndex]),
+      ),
       body: PageView( //page页，根据controller控制显示哪个页面
-        controller: _controller,
+        controller: _controller,//控制器
+        onPageChanged: _onPageChange, //页面改变的同事更改角标
         children: <Widget>[HomeFlutter(), ShoppingFlutter(), MineFlutter()],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -84,5 +90,9 @@ class ZYHFlutterState extends State<ZYHFlutter> {
       _currentIndex = index; //重新赋值选中的角标
     });
   }
-
+  void _onPageChange(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 }

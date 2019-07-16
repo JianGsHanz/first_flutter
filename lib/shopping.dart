@@ -12,9 +12,6 @@ class ShoppingFlutterState extends State<ShoppingFlutter>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(Strings.titleShopping),
-      ),
       body: Center(
         child: Text(
           Strings.bodyTextShopping,
