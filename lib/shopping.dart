@@ -36,11 +36,11 @@ class ShoppingFlutterState extends State<ShoppingFlutter> {
             // ...接着再生成10个单词对，然后添加到建议列表
             _stateList.addAll(generateWordPairs().take(10));
           }
-          return _buildRow(_stateList[index]); //如果为偶数就返回文字Item
+          return _buildRow(_stateList[index], index); //如果为偶数就返回文字Item
         });
   }
 
-  Widget _buildRow(WordPair pair) {
+  Widget _buildRow(WordPair pair, int index) {
     final alreadySaved = _saved.contains(pair);
     return new ListTile(
       title: new Text(
@@ -51,8 +51,13 @@ class ShoppingFlutterState extends State<ShoppingFlutter> {
         alreadySaved ? Icons.favorite : Icons.favorite_border,
         color: alreadySaved ? Colors.amber : null,
       ),
+      selected: alreadySaved, //选中状态
       onTap: () {
         setState(() {
+          //Item 为0 时--跳转路由
+          if (index == 0) {
+            _onRoutes();
+          }
           //调用setState() 会为State对象触发build()方法，从而导致对UI的更新
           if (alreadySaved) {
             _saved.remove(pair);
@@ -62,5 +67,36 @@ class ShoppingFlutterState extends State<ShoppingFlutter> {
         });
       },
     );
+  }
+
+  _onRoutes() {
+    Navigator.of(context).push(new MaterialPageRoute(
+        // ignore: missing_return
+        builder: (context) {
+      //根据已收藏的集合转换为一个ListTile的集合
+      final tiles = _saved.map(
+        (pair) {
+          return new ListTile(
+            title: new Text(
+              pair.asPascalCase,
+              style: TextStyle(fontSize: 18.0),
+            ),
+          );
+        },
+      );
+      //在Item直接添加分割线..
+      final divided = ListTile.divideTiles(
+        context: context,
+        tiles: tiles,
+      ).toList();
+
+      //返回一个新的布局页面
+      return new Scaffold(
+        appBar: new AppBar(
+          title: new Text('one new page'),
+        ),
+        body: new ListView(children: divided),
+      );
+    }));
   }
 }

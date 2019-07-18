@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.amber,
+        primaryColor: Colors.amber,
       ),
       home: ZYHFlutter(),
     );
@@ -70,7 +70,7 @@ class ZYHFlutterState extends State<ZYHFlutter> {
           ]),
     );
   }
-
+   //创建底部导航
   _createBottomNavigationBarItem(IconData icon, Color unSelectColor,
           Color selectColor, int index, String tabName) =>
       BottomNavigationBarItem(
@@ -83,13 +83,14 @@ class ZYHFlutterState extends State<ZYHFlutter> {
             style: TextStyle(
                 color: _currentIndex == index ? selectColor : unSelectColor),
           ));
-
+  //底部导航点击回调
   void _onTap(int index) {
     setState(() { //调用setState() 会为State对象触发build()方法，从而导致对UI的更新
       _controller.jumpToPage(index); //根据角标控制显示页面
       _currentIndex = index; //重新赋值选中的角标
     });
   }
+  //页面改变回调
   void _onPageChange(int index) {
     setState(() {
       _currentIndex = index;
