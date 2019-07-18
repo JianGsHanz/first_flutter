@@ -85,7 +85,7 @@ class ZYHFlutterState extends State<ZYHFlutter> {
           ));
 
   void _onTap(int index) {
-    setState(() {
+    setState(() { //调用setState() 会为State对象触发build()方法，从而导致对UI的更新
       _controller.jumpToPage(index); //根据角标控制显示页面
       _currentIndex = index; //重新赋值选中的角标
     });
