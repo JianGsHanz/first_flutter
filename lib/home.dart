@@ -1,6 +1,5 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_app/study/study_function.dart';
 
 class HomeFlutter extends StatefulWidget {
   @override
@@ -10,20 +9,72 @@ class HomeFlutter extends StatefulWidget {
 }
 
 class HomeFlutterState extends State<HomeFlutter> {
+
+  final List _list = getList();
   @override
   Widget build(BuildContext context) {
-    var wordPair = new WordPair.random();
     return Scaffold(
-      body: Center(
-        child: GestureDetector(
-            //要监听Text事件必须把Text封装在GestureDetector里
-            onTap: () =>
-                Fluttertoast.showToast(msg: wordPair.asPascalCase), //Text点击时调用
-            child: Text(
-              wordPair.asPascalCase,
-              style: TextStyle(fontSize: 25),
-            )),
-      ),
+      body: ListView.separated(
+          padding: EdgeInsets.only(left:20.0,top:10.0,right:20.0,bottom:0.0),
+          itemBuilder: (context, index){
+            return ListTile(
+              title: Text(_list[index]),
+              onTap: (){
+                onTap(index, context);
+              },
+            );
+          },
+          separatorBuilder: (context, index) { //ListView 分割线
+            return Divider(
+              height: 1,
+              color: Colors.black,
+            );
+          },
+          itemCount: _list.length
+      )
     );
   }
+
+  void onTap(int index, BuildContext context) {
+    switch(index){
+      case 0:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=> LoadingText())
+        );
+        break;
+      case 1:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=> RowStudy())
+        );
+        break;
+      case 2:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=> ColumnStudy())
+        );
+        break;
+      case 3:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=> WrapStudy())
+        );
+        break;
+      case 4:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=> StackStudy())
+        );
+        break;
+      case 5:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=> FlexStudy())
+        );
+        break;
+    }
+  }
 }
+
+List getList() => List()
+    ..add("加载本地json文本")
+    ..add("水平线性布局(Row)")
+    ..add("垂直线性布局(Column)")
+    ..add("流式布局Widget")
+    ..add("层式布局Widget")
+    ..add("弹性布局Widget");
