@@ -53,6 +53,7 @@ class ZYHFlutterState extends State<ZYHFlutter> {
       appBar: AppBar(
         title: Text(titles[_currentIndex]),
       ),
+      drawer: buildDrawer(),
       body: my.PageView( //page页，根据controller控制显示哪个页面
         controller: _controller,//控制器
         onPageChanged: _onPageChange, //页面改变的同事更改角标
@@ -96,5 +97,30 @@ class ZYHFlutterState extends State<ZYHFlutter> {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  Drawer buildDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName: Text('张*华'),
+            accountEmail: Text('173****6464@163.com'),
+            currentAccountPicture: CircleAvatar(
+              child: Image.asset('images/test.jpg',width:100,height: 100,fit: BoxFit.cover,),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.build),
+            title: Text('设置'),
+          ),
+          ListTile(
+            leading: Icon(Icons.add_alarm),
+            title: Text('提醒'),
+          )
+        ],
+      ),
+    );
   }
 }
