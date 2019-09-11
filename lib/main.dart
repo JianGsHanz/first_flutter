@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/my_page_view.dart' as my;
 import 'package:flutter_app/shopping.dart';
 import 'package:flutter_app/strings.dart';
 import 'home.dart';
@@ -52,7 +53,7 @@ class ZYHFlutterState extends State<ZYHFlutter> {
       appBar: AppBar(
         title: Text(titles[_currentIndex]),
       ),
-      body: PageView( //page页，根据controller控制显示哪个页面
+      body: my.PageView( //page页，根据controller控制显示哪个页面
         controller: _controller,//控制器
         onPageChanged: _onPageChange, //页面改变的同事更改角标
         children: <Widget>[HomeFlutter(), ShoppingFlutter(), MineFlutter()],
