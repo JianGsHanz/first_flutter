@@ -1,8 +1,13 @@
+import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_app/bean/top_bean.dart';
+import 'package:flutter_app/bean/video_bean.dart';
 
 /**
  * 加载本地Json文件
@@ -238,5 +243,173 @@ class FlexStudy extends StatelessWidget{
         ),
       ),
     );
+  }
+}
+
+
+
+
+/**
+ * Dio 网络请求
+ */
+class DioStudy extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return DioStudyState();
+  }
+}
+class DioStudyState extends State<DioStudy>{
+  String _address = '';
+  String topResult = ' ';
+  var len = 0;
+  List<Datum> data;
+  List<Act> actS;
+  var actLen = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Dio Title"),
+      ),
+      body: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height
+          ),
+          child: _buildColumn(),
+        ),
+      )
+    );
+  }
+
+  _buildColumn(){
+    return Column(
+      children: <Widget>[
+        Text('请求结果为:'),
+        Text(' $_address'),
+        RaisedButton(
+            splashColor: Colors.amber,
+            textColor: Colors.amber,
+            child: Text("请求网络(GET)"),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
+            onPressed: () {
+              _getNetResult();
+            }
+        ),
+        ///------------------------------------
+        RaisedButton(
+            splashColor: Colors.blue,
+            textColor: Colors.blue,
+            child: Text("请求网络(GET)展示到list"),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
+            onPressed: () {
+              _getTopResult();
+            }
+        ),
+        Container(
+          height: 1200,
+          child: ListView.separated(itemBuilder: (context,index){
+            return ListTile(
+              title: Text('${data[index].title}'),
+            );
+          },
+            itemCount: len,
+            physics: NeverScrollableScrollPhysics(),
+            separatorBuilder: (context,index){
+              return Divider(
+                height: 1,
+                color: Colors.black,
+              );
+            },),
+        ),
+        ///------------------------------------
+        RaisedButton(
+            splashColor: Colors.redAccent,
+            textColor: Colors.redAccent,
+            child: Text("请求网络(POST)展示到list"),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
+            onPressed: () {
+              _getVideoResult();
+            }
+        ),
+        Container(
+          height: 600,
+          child: ListView.separated(itemBuilder: (context,index){
+            return ListTile(
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Image.network(
+                    actS[index].image,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,),
+                  Text(actS[index].name),
+                ],
+              ),
+            );
+          },
+            itemCount: actLen,
+            physics: NeverScrollableScrollPhysics(),
+            separatorBuilder: (context,index){
+              return Divider(
+                height: 1,
+                color: Colors.black,
+              );
+            },),
+        ),
+      ],
+    );
+  }
+
+  _getVideoResult() async{
+    var map = HashMap<String,dynamic>();
+    map['q'] = '攀登者';
+    map['key'] = '8aaa82f64c4f40936529aa6a251fdab4';
+    var response = await Dio().post('http://op.juhe.cn/onebox/movie/video',queryParameters: map);
+    if(response.statusCode == HttpStatus.ok){
+      var bean = VideoBean.fromJson(jsonDecode(response.toString()));
+      actS = bean.result.actS;
+    }
+    setState(() {
+      actLen = actS.length;
+    });
+  }
+
+  _getTopResult() async{
+    var map = HashMap<String,dynamic>();
+    map['type'] = 'top';
+    map['key'] = '368dc8c1e591d5aa1258d6effb056f31';
+    var response = await Dio().get('http://v.juhe.cn/toutiao/index',queryParameters: map);
+    if(response.statusCode == HttpStatus.ok){
+      Top top = Top.fromJson(jsonDecode(response.toString()));
+      var result = top.result;
+      data = result.data;
+    }
+    setState(() {
+      len = data.length;
+    });
+  }
+  _getNetResult() async{
+    var result;
+    try{
+      var url = 'https://httpbin.org/ip';
+      var response = await Dio().get(url);
+      if(response.statusCode == HttpStatus.ok){
+        var data = jsonDecode(response.toString());
+        result = data['origin'];
+      }
+    }catch(e){
+      result = e.toString();
+    }
+    setState(() {
+      _address = result;
+    });
   }
 }

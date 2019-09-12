@@ -38,7 +38,7 @@ class HomeFlutterState extends State<HomeFlutter> {
   void onTap(int index, BuildContext context) {
     switch(index){
       case 0:
-        Navigator.push(context,
+        Navigator.push(context,//新建路由
             MaterialPageRoute(builder: (context)=> LoadingText())
         );
         break;
@@ -67,6 +67,11 @@ class HomeFlutterState extends State<HomeFlutter> {
             MaterialPageRoute(builder: (context)=> FlexStudy())
         );
         break;
+      case 6:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=> DioStudy())
+        );
+        break;
     }
   }
 }
@@ -75,6 +80,7 @@ List getList() => List()
     ..add("加载本地json文本")
     ..add("水平线性布局(Row)")
     ..add("垂直线性布局(Column)")
-    ..add("流式布局Widget")
-    ..add("层式布局Widget")
-    ..add("弹性布局Widget");
+    ..add("流式布局Widget(Wrap)")
+    ..add("层式布局Widget(Stack)")
+    ..add("弹性布局Widget(Flex)")
+    ..add("Dio使用(网络请求)");
