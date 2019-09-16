@@ -72,6 +72,11 @@ class HomeFlutterState extends State<HomeFlutter> {
             MaterialPageRoute(builder: (context)=> DioStudy())
         );
         break;
+      case 7:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=> InteractionStudy())
+        );
+        break;
     }
   }
 }
@@ -83,4 +88,5 @@ List getList() => List()
     ..add("流式布局Widget(Wrap)")
     ..add("层式布局Widget(Stack)")
     ..add("弹性布局Widget(Flex)")
-    ..add("Dio使用(网络请求)");
+    ..add("Dio使用(网络请求)")
+    ..add("android,flutter交互");

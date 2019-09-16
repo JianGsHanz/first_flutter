@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/bean/top_bean.dart';
 import 'package:flutter_app/bean/video_bean.dart';
 
@@ -411,5 +412,75 @@ class DioStudyState extends State<DioStudy>{
     setState(() {
       _address = result;
     });
+  }
+}
+
+
+/**
+ * android,flutter交互
+ */
+class InteractionStudy extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return InteractionStudyState();
+  }
+}
+class InteractionStudyState extends State<InteractionStudy>{
+  final  methodChannel = MethodChannel('com.zyh.flutter_app.android');
+  final  methodChannel1 = MethodChannel('com.zyh.flutter_app.flutter');
+
+  String textContent = "textContent";
+
+  @override
+  void initState() {
+    super.initState();
+    methodChannel1.setMethodCallHandler((methodCall) async{
+      switch(methodCall.method){
+        case "showText":
+          String content = await methodCall.arguments['AContent'];
+          if(content!=null&&content.isNotEmpty){
+            setState(() {
+              textContent = content;
+            });
+          }
+          break;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('android,flutter交互'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          RaisedButton(
+            child: Text('Flutter调用Android dialog'),
+              onPressed: ()=> _showDialog('啦啦啦啦啦啦'),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(textContent)
+            ],
+          ),
+        ],
+      )
+    );
+  }
+
+  _showDialog(String content) async{
+    var map = Map();
+    map['content'] = content;
+    try{
+      var result = await methodChannel.invokeMethod('dialog',map);
+      print('接收到android的数据:'+result.toString());
+    }catch(e){
+
+    }
   }
 }
