@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/bean/top_bean.dart';
-import 'package:flutter_app/bean/video_bean.dart';
+import 'package:flutter_app/bean/video_bean.dart'as video;
 
 /**
  * 加载本地Json文件
@@ -264,7 +264,8 @@ class DioStudyState extends State<DioStudy>{
   String topResult = ' ';
   var len = 0;
   List<Datum> data;
-  List<Act> actS;
+  video.Result result;
+  List<video.Act> actS;
   var actLen = 0;
   @override
   Widget build(BuildContext context) {
@@ -341,29 +342,50 @@ class DioStudyState extends State<DioStudy>{
         ),
         Container(
           height: 600,
-          child: ListView.separated(itemBuilder: (context,index){
+          child: ListView.builder(itemBuilder: (context,index){
             return ListTile(
-              title: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Image.network(
-                    actS[index].image,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,),
-                  Text(actS[index].name),
-                ],
+              title: Card(
+                elevation: 5,
+                margin: EdgeInsets.only(left: 10,right: 10,top: 8),
+                shape:  RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      child: Image.network(
+                        actS[index].image,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 5,top: 2),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text("电影："+result.title),
+                          Text("分类："+result.tag),
+                          Text("年份："+result.year),
+                          Container(
+                            child: Text(
+                              "详情："+result.desc,
+                              maxLines: 1,//???????
+                              overflow: TextOverflow.ellipsis,//???????
+                            ),
+                          ),
+                          Text("演员："+actS[index].name)
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             );
           },
             itemCount: actLen,
             physics: NeverScrollableScrollPhysics(),
-            separatorBuilder: (context,index){
-              return Divider(
-                height: 1,
-                color: Colors.black,
-              );
-            },),
+          ),
         ),
       ],
     );
@@ -375,7 +397,8 @@ class DioStudyState extends State<DioStudy>{
     map['key'] = '8aaa82f64c4f40936529aa6a251fdab4';
     var response = await Dio().post('http://op.juhe.cn/onebox/movie/video',queryParameters: map);
     if(response.statusCode == HttpStatus.ok){
-      var bean = VideoBean.fromJson(jsonDecode(response.toString()));
+      var bean = video.VideoBean.fromJson(jsonDecode(response.toString()));
+      result = bean.result;
       actS = bean.result.actS;
     }
     setState(() {
