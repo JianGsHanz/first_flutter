@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/bean/top_bean.dart';
 import 'package:flutter_app/bean/video_bean.dart'as video;
+import 'package:fluttertoast/fluttertoast.dart';
 
 /**
  * 加载本地Json文件
@@ -344,43 +345,48 @@ class DioStudyState extends State<DioStudy>{
           height: 600,
           child: ListView.builder(itemBuilder: (context,index){
             return ListTile(
-              title: Card(
-                elevation: 5,
-                margin: EdgeInsets.only(left: 10,right: 10,top: 8),
-                shape:  RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      child: Image.network(
-                        actS[index].image,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 5,top: 2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("电影："+result.title),
-                          Text("分类："+result.tag),
-                          Text("年份："+result.year),
-                          Container(
-                            child: Text(
-                              "详情："+result.desc,
-                              maxLines: 1,//???????
-                              overflow: TextOverflow.ellipsis,//???????
-                            ),
-                          ),
-                          Text("演员："+actS[index].name)
-                        ],
+              title: GestureDetector(//手势控制
+                onTap: ()=> Fluttertoast.showToast(msg: actS[index].name),
+                child: Card(
+                  elevation: 5,
+                  margin: EdgeInsets.only(left: 10,right: 10,top: 8),
+                  shape:  RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        child: Image.network(
+                          actS[index].image,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,),
                       ),
-                    )
-                  ],
+                      Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10,top: 5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text("电影：${result.title}"),
+                                Text("分类：${result.tag}"),
+                                Text("年份：${result.year}"),
+                                Container(
+                                  child: Text(
+                                    "详情：${result.desc}",
+                                    maxLines: 1,//Column或Row 如果不用Expanded 会overflow
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text("演员：${actS[index].name}")
+                              ],
+                            ),
+                          )
+                      )
+                    ],
+                  ),
                 ),
-              ),
+              )
             );
           },
             itemCount: actLen,
