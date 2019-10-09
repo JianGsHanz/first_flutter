@@ -28,6 +28,7 @@ dependencies:
 #  随机单词
   english_words: ^3.1.0
 
+  flutter_redux: ^0.5.3
   dio: ^2.1.7
 
 # For information on the generic Dart part of this file, see the

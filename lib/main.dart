@@ -1,32 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_app/my_page_view.dart' as my;
+import 'package:flutter_app/redux/app_state.dart';
+import 'package:flutter_app/redux/theme_redux.dart';
 import 'package:flutter_app/shopping.dart';
 import 'package:flutter_app/strings.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'home.dart';
 import 'mine.dart';
+import 'package:redux/redux.dart';
 
 void main() => runApp(MyApp());
 
 /*当一个控件状态是固定不可变的时候，就可以使用 StatelessWidget。
 前面我们写的 Hello World 就是使用 StatelessWidget。*/
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  final store = Store(
+    appReducer,
+    initialState: AppState(
+      themeData: ThemeData(
+        primaryColor: Colors.brown,
+      )
+    )
+  );
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primaryColor: Colors.amber,
-      ),
-      home: ZYHFlutter(),
+    return StoreProvider(
+      store: store,
+      child: StoreBuilder<AppState>(builder: (context,state){
+        return MaterialApp(
+          theme: store.state.themeData,
+          home: ZYHFlutter(store:state),
+        );
+      },),
     );
   }
 }
@@ -36,17 +42,22 @@ class MyApp extends StatelessWidget {
  StatefulWidget 本身不可变，但它持有的状态 State 是可变的。*/
 
 class ZYHFlutter extends StatefulWidget {
+  Store store;
+  ZYHFlutter({this.store});
   @override
   State<StatefulWidget> createState() {
-    return new ZYHFlutterState();
+    return new ZYHFlutterState(store:store);
   }
 }
 
 class ZYHFlutterState extends State<ZYHFlutter> {
   var _currentIndex = 0;
+  var _themeIndex = 0; //默认颜色
   List<String> titles = [Strings.titleHome,Strings.titleShopping,Strings.titleMine];
   final PageController _controller = PageController();
 
+  Store store;
+  ZYHFlutterState({this.store});
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -64,11 +75,11 @@ class ZYHFlutterState extends State<ZYHFlutter> {
           currentIndex: _currentIndex, //当前被选中的tab
           items: [
             _createBottomNavigationBarItem(
-                Icons.add_to_photos, Colors.grey, Colors.amber, 0, "首页"),
+                Icons.add_to_photos, Colors.grey, getThemeListColor()[_themeIndex], 0, "首页"),
             _createBottomNavigationBarItem(
-                Icons.add_shopping_cart, Colors.grey, Colors.amber, 1, "购物车"),
+                Icons.add_shopping_cart, Colors.grey, getThemeListColor()[_themeIndex], 1, "购物车"),
             _createBottomNavigationBarItem(
-                Icons.account_circle, Colors.grey, Colors.amber, 2, "我的")
+                Icons.account_circle, Colors.grey, getThemeListColor()[_themeIndex], 2, "我的")
           ]),
     );
   }
@@ -118,9 +129,70 @@ class ZYHFlutterState extends State<ZYHFlutter> {
           ListTile(
             leading: Icon(Icons.add_alarm),
             title: Text('提醒'),
+          ),
+          ListTile(
+            leading: Icon(Icons.store),
+            title: Text('切换主题'),
+            onTap: (){
+              _showDialog();
+            },
           )
         ],
       ),
     );
   }
+
+
+  static List<Color> getThemeListColor() {
+    return [
+      Colors.brown,
+      Colors.blue,
+      Colors.teal,
+      Colors.amber,
+      Colors.blueGrey,
+      Colors.deepOrange,
+    ];
+  }
+
+  void _showDialog() {
+    showDialog<Null>(
+        context: context,
+        barrierDismissible: true,
+        builder: (context){
+          return MediaQuery(
+            ///不受系统字体缩放影响
+              data: MediaQueryData.fromWindow(WidgetsBinding.instance.window)
+                  .copyWith(textScaleFactor: 1),
+              child:  SafeArea(
+                  child: Center(
+                    child: Container(
+                      width: 250,
+                      height: 300,
+                      padding: new EdgeInsets.all(4.0),
+                      margin: new EdgeInsets.all(20.0),
+                      decoration: new BoxDecoration(
+                        color: Colors.white,
+                        //用一个BoxDecoration装饰器提供背景图片
+                        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                      ),
+                      child: ListView.builder(
+                          itemCount: getThemeListColor().length,
+                          itemBuilder: (context, index){
+                            return RaisedButton(
+                              color:getThemeListColor()[index],
+                              onPressed: (){
+                                _themeIndex = index;
+                                store.dispatch(ThemeAction(themeData: ThemeData(primaryColor: getThemeListColor()[index])));
+                                Navigator.of(context).pop(); //取消弹窗
+                              },
+                            );
+                          }
+                      ),
+                    ),
+                  )
+              ));
+        });
+  }
 }
+
+
