@@ -12,6 +12,9 @@ class ThemeAction{
 }
 
 ///通过 flutter_redux 的 combineReducers，实现 Reducer 方法
+/// 这里combineReducers的作用是把action和函数绑定起来，
+/// 免去了写例如if ( )之类的判断语句。
+/// 对应的action执行对应的函数。
 final ThemeDataReducer = combineReducers<ThemeData>([
   ///将 Action 、处理 Action 的方法、State 绑定   3 step- dispatch
   TypedReducer<ThemeData, ThemeAction>(_refresh),
