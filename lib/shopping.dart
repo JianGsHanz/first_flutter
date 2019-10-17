@@ -1,5 +1,7 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/redux/app_state.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 class ShoppingFlutter extends StatefulWidget {
   @override
@@ -47,9 +49,14 @@ class ShoppingFlutterState extends State<ShoppingFlutter> {
         pair.asPascalCase, //随机生成的Text单词
         style: TextStyle(fontSize: 18.0),
       ),
-      trailing: new Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.amber : null,
+      trailing: StoreConnector<AppState,ThemeData>(
+        converter: (store) => store.state.themeData,
+        builder: (context,themeData){
+          return new Icon(
+            alreadySaved ? Icons.favorite : Icons.favorite_border,
+            color: alreadySaved ? themeData.primaryColor : null,
+          );
+        },
       ),
       selected: alreadySaved, //选中状态
       onTap: () {
